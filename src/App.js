@@ -1,105 +1,86 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
 import ContactList from "./contact-list/ContactList";
 import AddContact from "./AddContact";
 import Search from "./search/Search";
 import * as db from "./data";
 import "./App.css";
+import { Empty } from "antd";
 
-class App extends React.Component {
-  state = {
-    contacts: null,
-    isEnable: true,
-    searchValue: "",
-    addForm: false,
-  };
+export default function App() {
+  const [contacts, setContacts] = useState(db.getContacts());
+  const [searchValue, setSearchValue] = useState("");
+  const [addForm, setAddForm] = useState(false);
 
-  componentDidMount() {
-    const data = db.getContacts();
-    this.setState({ contacts: data });
-  }
+  useEffect(() => {
+    const data = db
+      .getContacts()
+      .filter((contact) =>
+        contact.name.toUpperCase().includes(searchValue.toUpperCase())
+      );
+    setContacts(data);
+  }, [searchValue]);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchValue !== this.state.searchValue) {
-      const data = db
-        .getContacts()
-        .filter((contact) =>
-          contact.name
-            .toUpperCase()
-            .includes(this.state.searchValue.toUpperCase())
-        );
-      this.setState({ contacts: data });
-    }
-  }
+  // const handleClick = (id) => {
+  //   const contactData = this.state.contacts.filter((x) => x.id !== id);
+  //   this.setState({ contacts: contactData });
+  // };
 
-  handleClick = (id) => {
-    const contactData = this.state.contacts.filter((x) => x.id !== id);
-    this.setState({ contacts: contactData });
-  };
-
-  handleSearch = (event) => {
-    const contacts = contacts.filter((x) =>
+  const handleSearch = (event) => {
+    const NewData = contacts.filter((x) =>
       x.name.toUpperCase().includes(event.target.value.toUpperCase())
     );
-    this.setState({
-      searchValue: event.target.value,
-      contacts,
-    });
+    setSearchValue(event.target.value);
+    setContacts(NewData);
   };
 
-  handleClose = () => {
-    this.setState({ addForm: false });
-  };
-
-  handleRemoveContact = ({ id }) => {
-    const newList = this.state.contacts.filter((item) => item.id !== id);
-    this.setState({ contacts: newList });
+  const handleRemoveContact = ({ id }) => {
+    const newList = contacts.filter((item) => item.id !== id);
+    setContacts(newList);
     localStorage.setItem("contacts", JSON.stringify(newList));
   };
 
-  handleEditContact = ({ id, email, phone, name }) => {
-    const newList = this.state.contacts
+  const handleEditContact = ({ id, email, phone, name }) => {
+    const newList = contacts
       .filter((item) => item.id !== id)
       .concat({ id, email, phone, name });
-    this.setState({ contacts: newList });
+    setContacts(newList);
     localStorage.setItem("contacts", JSON.stringify(newList));
   };
 
-  hendleShowAddForm = () => {
-    this.setState({ addForm: true });
-  };
-
-  handleAddContact = (contact) => {
-    this.setState({ contacts: [...this.state.contacts, contact] });
-  };
-
-  onSearch = (e) => {
-    this.setState({ searchValue: e.target.value });
-  };
-
-  render() {
-    return (
-      <>
-        <Header />
+  return (
+    <>
+      <Header />
+      {!addForm ? (
         <Search
-          searchValue={this.state.searchValue}
-          showAddForm={this.hendleShowAddForm}
-          handleSearch={this.onSearch}
+          searchValue={searchValue}
+          showAddForm={() => setAddForm(true)}
+          handleSearch={(e) => setSearchValue(e.target.value)}
         />
-        {this.state.addForm ? (
-          <AddContact
-            close={this.handleClose}
-            handleAddContact={this.handleAddContact}
-          />
-        ) : (
-          <ContactList
-            contacts={this.state.contacts}
-            handleRemoveContact={this.handleRemoveContact}
-            handleEditContact={this.handleEditContact}
-          />
-        )}
-      </>
-    );
-  }
+      ) : (
+        ""
+      )}
+      {addForm ? (
+        <AddContact
+          close={() => setAddForm(false)}
+          handleAddContact={(contact) =>
+            setContacts((prev) => [...prev, contact])
+          }
+        />
+      ) : contacts.length === 0 ? (
+        <Empty
+          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+          imageStyle={{
+            height: 60,
+          }}
+        />
+      ) : (
+        <ContactList
+          contacts={contacts}
+          handleRemoveContact={handleRemoveContact}
+          handleEditContact={handleEditContact}
+        />
+      )}
+    </>
+  );
 }
-export default App;

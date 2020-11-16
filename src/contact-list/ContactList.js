@@ -1,27 +1,26 @@
-import React, { Component } from "react";
+import React from "react";
 import ContactListItem from "./contact-list-item/ContactListItem";
 import "./ContactList.css";
 
-class ContactList extends Component {
-  render() {
-    return (
-      <div className="container">
-        <h4>კონტაქტები</h4>
-        <hr />
-        <br />
-        <div>
-          {this.props.contacts &&
-            this.props.contacts.map((contact) => (
-              <ContactListItem
-                key={contact.id}
-                contact={contact}
-                removeContact={this.props.handleRemoveContact}
-                editContact={this.props.handleEditContact}
-              />
-            ))}
-        </div>
+export default function ContactList({
+  contacts,
+  handleRemoveContact,
+  handleEditContact,
+}) {
+  return (
+    <div className="container">
+      <h4>კონტაქტები</h4>
+      <div>
+        {contacts &&
+          contacts.map((contact) => (
+            <ContactListItem
+              key={contact.id}
+              contact={contact}
+              removeContact={handleRemoveContact}
+              editContact={handleEditContact}
+            />
+          ))}
       </div>
-    );
-  }
+    </div>
+  );
 }
-export default ContactList;

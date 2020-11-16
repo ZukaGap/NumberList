@@ -1,0 +1,10 @@
+.addform {
+  max-width: 600px;
+  margin: 100px auto;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
