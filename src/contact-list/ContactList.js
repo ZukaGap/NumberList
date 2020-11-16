@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
-import ContactListItem from './contact-list-item/ContactListItem'
-import './ContactList.css'
+import React, { Component } from "react";
+import ContactListItem from "./contact-list-item/ContactListItem";
+import "./ContactList.css";
 
 class ContactList extends Component {
   render() {
     return (
-      <div className='container'>
+      <div className="container">
         <h4>კონტაქტები</h4>
         <hr />
         <br />
@@ -21,7 +21,7 @@ class ContactList extends Component {
             ))}
         </div>
       </div>
-    )
+    );
   }
 }
-export default ContactList
+export default ContactList;
